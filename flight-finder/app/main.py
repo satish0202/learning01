@@ -9,6 +9,9 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import db
+from .config import load_env
+
+load_env()
 from .models import SearchRequest, SearchResult, SearchSummary
 from .providers import ProviderError, list_providers
 from .search import run_search

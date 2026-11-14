@@ -51,6 +51,9 @@ class DemoProvider(FlightProvider):
     label = "Demo data (offline)"
     description = "Made-up but realistic flights. Works without internet or API keys."
 
+    def notes(self, req: SearchRequest) -> list[str]:
+        return ["Demo data: these flights are made up, for trying the app out."]
+
     async def search(self, req: SearchRequest) -> list[FlightOffer]:
         base = _route_base_minutes(req.origin, req.destination)
         fx = FX.get(req.currency, 1.0)

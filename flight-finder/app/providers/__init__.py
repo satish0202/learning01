@@ -4,9 +4,12 @@ from __future__ import annotations
 from .base import FlightProvider, ProviderError
 from .demo import DemoProvider
 from .duffel import DuffelProvider
+from .serpapi import SerpApiProvider
+from .travelpayouts import TravelpayoutsProvider
 
 _ALL: dict[str, FlightProvider] = {
-    p.name: p for p in (DemoProvider(), DuffelProvider())
+    p.name: p
+    for p in (DemoProvider(), TravelpayoutsProvider(), SerpApiProvider(), DuffelProvider())
 }
 
 

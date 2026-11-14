@@ -31,25 +31,44 @@ Run the tests with `python -m pytest -q`.
 
 ## Flight sources
 
-| Source | What it is | Setup |
-|---|---|---|
-| **Demo data** (default) | Made-up but realistic flights, generated the same way every time for a given spec. Lets you try the full app with no internet or keys. | None |
-| **Duffel API** | Real airline offers from [Duffel](https://duffel.com/docs/api/offer-requests). A free test token returns Duffel's sandbox airline; a live token returns real fares. | Sign up at duffel.com, create an access token, then `export DUFFEL_ACCESS_TOKEN=duffel_test_...` before starting the server. |
+| Source | Prices | Cost | Setup |
+|---|---|---|---|
+| **Aviasales prices** (Travelpayouts Data API) | Real fares that Aviasales users found in the last 48 hours. A cache, not a live search, so check the price on the booking page. Economy only. | Free, no monthly cap | Sign up at [travelpayouts.com](https://www.travelpayouts.com), copy the token from Profile → API token, put it in `.env` as `TRAVELPAYOUTS_TOKEN`. |
+| **Google Flights live** (SerpApi) | Live Google Flights results. For round trips it shows the outbound flight with the round-trip total; pick the return on Google Flights with the Book link. | Free plan: 250 searches a month, 50 an hour. Each search uses one. | Sign up at [serpapi.com](https://serpapi.com), copy the key from your dashboard, put it in `.env` as `SERPAPI_API_KEY`. |
+| **Demo data** | Made-up flights, so the app works with no keys. | Free | None |
+| **Duffel API** | Test mode returns Duffel's sandbox airline only; real fares need a verified paid account. | Paid for real fares | `DUFFEL_ACCESS_TOKEN` |
 
-**Why an API rather than scraping sites?** Google Flights, Skyscanner,
-Kayak and airline sites forbid automated scraping in their terms and actively
-block bots, so a scraper would be fragile and against their rules. Duffel is
-built for programmatic access. (Amadeus' free self-service API, the other
-common choice, was shut down in 2026.) New sources can be added by writing a
-class in `app/providers/` that implements `FlightProvider.search()` and
-registering it in `app/providers/__init__.py`; filtering, sorting and storage
-are shared.
+To add your keys:
 
-Limitations of this first version:
-- Duffel prices come back in the airline's currency; the max-price filter is
-  compared in that currency (the page tells you when this happens).
+```bash
+cp .env.example .env     # then edit .env and paste your token/key
+uvicorn app.main:app --reload
+```
+
+The source picker on the page shows which sources are set up. The first real
+source with a key is selected by default.
+
+**Why APIs rather than scraping sites?** Google Flights, Skyscanner, Kayak and
+airline sites forbid automated scraping in their terms and actively block
+bots, so a scraper of our own would be fragile and against their rules.
+Travelpayouts allows token holders to use its Data API without restrictions.
+SerpApi does the Google Flights collection on its side; note that Google is
+suing SerpApi over this (filed December 2025, still open), and the free plan
+doesn't include SerpApi's legal cover. Kiwi Tequila closed to new developers in
+2024 and Amadeus' free API shut down in 2026.
+
+New sources can be added by writing a class in `app/providers/` that
+implements `FlightProvider.search()` and registering it in
+`app/providers/__init__.py`; filtering, sorting and storage are shared.
+
+Limitations:
+- Aviasales arrival times are estimated from the flight duration, in the
+  departure airport's local time. Its per-person fares are multiplied by the
+  number of adults.
+- Some routes or dates have no Aviasales data, especially quiet routes or
+  dates far ahead. Try the SerpApi source for those.
 - Departure times are local airport times.
-- Booking is not supported; results are for finding flights only.
+- Booking happens on the source's site via the Book link.
 
 ## API
 
@@ -68,7 +87,12 @@ Interactive docs: http://localhost:8000/docs
 | Variable | Default | Meaning |
 |---|---|---|
 | `FLIGHT_DB_PATH` | `flights.db` | SQLite file for searches and results |
+| `TRAVELPAYOUTS_TOKEN` | (empty) | Enables Aviasales prices |
+| `SERPAPI_API_KEY` | (empty) | Enables Google Flights live |
 | `DUFFEL_ACCESS_TOKEN` | (empty) | Enables the Duffel source |
+
+Set them in a `.env` file in `flight-finder/` (see `.env.example`) or export
+them in your shell.
 
 ## Project layout
 
@@ -79,7 +103,8 @@ flight-finder/
     models.py        Flight spec and result models (validation lives here)
     search.py        Filters, sorting, saving results
     db.py            SQLite schema and queries
-    providers/       demo.py, duffel.py, base.py
+    config.py        Reads settings from .env
+    providers/       travelpayouts.py, serpapi.py, demo.py, duffel.py, base.py
   static/            index.html, app.js, styles.css (no build step)
   tests/             API and parser tests
 ```

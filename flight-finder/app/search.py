@@ -42,9 +42,7 @@ async def run_search(req: SearchRequest) -> SearchResult:
         raise ValueError("departure date is in the past")
     provider = get_provider(req.provider)
     raw = await provider.search(req)
-    notes: list[str] = []
-    if req.provider == "demo":
-        notes.append("Demo data: these flights are made up, for trying the app out.")
+    notes: list[str] = provider.notes(req)
     mismatched = {o.currency for o in raw if o.currency != req.currency}
     if mismatched:
         notes.append(

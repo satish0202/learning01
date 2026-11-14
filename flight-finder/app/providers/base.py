@@ -17,6 +17,10 @@ class FlightProvider(ABC):
     def available(self) -> bool:
         return True
 
+    def notes(self, req: SearchRequest) -> list[str]:
+        """Caveats about this source to show above the results."""
+        return []
+
     @abstractmethod
     async def search(self, req: SearchRequest) -> list[FlightOffer]:
         """Return raw offers for the route and dates.
