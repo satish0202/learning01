@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flight Finder</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>✈ Flight Finder</h1>
+    <p class="tagline">Enter your flight spec, see matching flights below.</p>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <form id="search-form" novalidate>
+        <div class="trip-type" role="radiogroup" aria-label="Trip type">
+          <label><input type="radio" name="trip" value="return" checked> Return</label>
+          <label><input type="radio" name="trip" value="oneway"> One way</label>
+        </div>
+
+        <div class="grid two">
+          <label>From
+            <input name="origin" placeholder="JFK" maxlength="3" required autocomplete="off">
+          </label>
+          <label>To
+            <input name="destination" placeholder="LHR" maxlength="3" required autocomplete="off">
+          </label>
+          <label>Depart
+            <input type="date" name="depart_date" required>
+          </label>
+          <label id="return-field">Return
+            <input type="date" name="return_date">
+          </label>
+          <label>Adults
+            <input type="number" name="adults" min="1" max="9" value="1">
+          </label>
+          <label>Cabin
+            <select name="cabin">
+              <option value="economy">Economy</option>
+              <option value="premium_economy">Premium economy</option>
+              <option value="business">Business</option>
+              <option value="first">First</option>
+            </select>
+          </label>
+        </div>
+
+        <details class="filters" open>
+          <summary>Filters</summary>
+          <div class="grid two">
+            <label>Max price
+              <input type="number" name="max_price" min="1" step="1" placeholder="Any">
+            </label>
+            <label>Currency
+              <select name="currency">
+                <option>USD</option><option>EUR</option><option>GBP</option>
+                <option>INR</option><option>CAD</option><option>AUD</option>
+              </select>
+            </label>
+            <label>Max stops
+              <select name="max_stops">
+                <option value="">Any</option>
+                <option value="0">Non-stop only</option>
+                <option value="1">Up to 1 stop</option>
+                <option value="2">Up to 2 stops</option>
+              </select>
+            </label>
+            <label>Sort by
+              <select name="sort_by">
+                <option value="price">Cheapest</option>
+                <option value="duration">Fastest</option>
+                <option value="departure">Earliest departure</option>
+              </select>
+            </label>
+            <label>Leave after
+              <input type="time" name="earliest_departure">
+            </label>
+            <label>Leave before
+              <input type="time" name="latest_departure">
+            </label>
+          </div>
+          <label>Airlines (codes, comma separated)
+            <input name="airlines" placeholder="e.g. BA, AA" autocomplete="off">
+          </label>
+        </details>
+
+        <label>Flight source
+          <select name="provider" id="provider"></select>
+        </label>
+
+        <p class="error" id="form-error" role="alert" hidden></p>
+        <button type="submit" id="submit">Find flights</button>
+      </form>
+
+      <div class="history">
+        <h2>Recent searches</h2>
+        <ul id="history-list"><li class="muted">No searches yet.</li></ul>
+      </div>
+    </section>
+
+    <section class="results" aria-live="polite">
+      <div id="results-header" class="results-header" hidden></div>
+      <ul id="notes" class="notes"></ul>
+      <div id="results-empty" class="empty">
+        <p>Your results will appear here.</p>
+      </div>
+      <ol id="results" class="cards"></ol>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

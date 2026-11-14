@@ -1,0 +1,7 @@
+# Pinned to versions that install on Python 3.9 through 3.13 (macOS ships 3.9).
+fastapi==0.128.8
+starlette==0.49.3
+uvicorn[standard]==0.39.0
+httpx==0.28.1
+pydantic==2.13.5
+pytest==8.4.2
