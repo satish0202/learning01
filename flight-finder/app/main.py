@@ -5,7 +5,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from . import db
@@ -74,7 +74,13 @@ def get_search(search_id: int) -> SearchResult:
     )
 
 
-@app.delete("/api/searches/{search_id}", status_code=204)
-def delete_search(search_id: int) -> None:
+@app.delete(
+    "/api/searches/{search_id}",
+    status_code=204,
+    response_class=Response,
+    response_model=None,
+)
+def delete_search(search_id: int) -> Response:
     if not db.delete_search(search_id):
         raise HTTPException(status_code=404, detail="Search not found")
+    return Response(status_code=204)

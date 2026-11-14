@@ -14,11 +14,11 @@ Browser (static/)  ──►  FastAPI middleware (app/)  ──►  Flight sourc
 
 ## Run it locally
 
-Needs Python 3.10 or newer.
+Needs Python 3.9 or newer (the one that comes with macOS works).
 
 ```bash
 cd flight-finder
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
